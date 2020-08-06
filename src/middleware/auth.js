@@ -8,5 +8,7 @@ export const WithAuth = async () => {
 }
 
 export const WithGuest = async () => {
-	Client.user().then(() => redirectTo('/home'))
+	Client.user()
+		.then(() => redirectTo('/home'))
+		.catch(() => {})
 }
