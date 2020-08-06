@@ -27,17 +27,12 @@ const options = {
 		prisma,
 		modelMapping: {
 			Session: 'nextSession',
-			User: 'user',
-			Account: 'account',
+			User: 'nextUser',
+			Account: 'nextAccount',
 			VerificationRequest: 'verificationRequest',
 		},
 	}),
 	callbacks: {
-		/**
-		 * @param  {string} url      URL provided as callback URL by the client
-		 * @param  {string} baseUrl  Default base URL of site (can be used as fallback)
-		 * @return {string}          URL the client will be redirect to
-		 */
 		redirect: async (url, baseUrl) => {
 			return url.startsWith(baseUrl) || url[0] === '/' ? Promise.resolve(url) : Promise.resolve(baseUrl)
 		},

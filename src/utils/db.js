@@ -28,7 +28,6 @@ export const getAccountFromSession = async (session) => {
 }
 
 export const getProfileFromUsername = async (username) => {
-	console.log({ username })
 	const prisma = await getConnection()
 
 	const data = await prisma.account.findOne({
