@@ -1,0 +1,62 @@
+import Head from 'next/head'
+import Logo from '../components/Logo'
+import { signIn, useSession } from 'next-auth/client'
+import { useBaseLayout } from '../components/BaseLayout'
+import { WithAuth, WithGuest } from '../middleware/auth'
+
+const Login = () => {
+	const [session, loading] = useSession()
+
+	return (
+		<>
+			<Head>
+				<title>Harmony</title>
+			</Head>
+
+			<div className="min-h-screen bg-white flex">
+				<div className="flex-1 flex flex-col justify-center py-12 px-4 sm:px-6 lg:flex-none lg:px-20 xl:px-24">
+					<div className="mx-auto w-full max-w-sm">
+						<div>
+							<Logo className="h-12 w-auto" />
+							<h2 className="mt-6 text-3xl leading-9 font-extrabold text-gray-900">Sign in to your account</h2>
+							<p className="mt-2 text-sm leading-5 text-gray-600 max-w">
+								Or{' '}
+								<a href="/" className="font-medium text-indigo-600 hover:text-indigo-500 focus:outline-none focus:underline transition ease-in-out duration-150">
+									start your 14-day free trial
+								</a>
+							</p>
+						</div>
+
+						<div className="mt-8">
+							<div>
+								<div>
+									<p className="text-sm leading-5 font-medium text-gray-700">Sign in with</p>
+
+									<div className="mt-1">
+										<div>
+											<span className="w-full inline-flex rounded-md shadow-sm">
+												<button onClick={() => signIn('spotify')} type="button" className="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md bg-white text-sm leading-5 font-medium text-gray-500 hover:text-gray-400 focus:outline-none focus:border-blue-300 focus:shadow-outline-blue transition duration-150 ease-in-out" aria-label="Sign in with Facebook">
+													<svg className="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 168 168">
+														<path fillRule="evenodd" clipRule="evenodd" d="M83.996.277C37.747.277.253 37.77.253 84.019c0 46.251 37.494 83.741 83.743 83.741 46.254 0 83.744-37.49 83.744-83.741 0-46.246-37.49-83.738-83.745-83.738l.001-.004zm38.404 120.78a5.217 5.217 0 01-7.18 1.73c-19.662-12.01-44.414-14.73-73.564-8.07a5.222 5.222 0 01-6.249-3.93 5.213 5.213 0 013.926-6.25c31.9-7.291 59.263-4.15 81.337 9.34 2.46 1.51 3.24 4.72 1.73 7.18zm10.25-22.805c-1.89 3.075-5.91 4.045-8.98 2.155-22.51-13.839-56.823-17.846-83.448-9.764-3.453 1.043-7.1-.903-8.148-4.35a6.538 6.538 0 014.354-8.143c30.413-9.228 68.222-4.758 94.072 11.127 3.07 1.89 4.04 5.91 2.15 8.976v-.001zm.88-23.744c-26.99-16.031-71.52-17.505-97.289-9.684-4.138 1.255-8.514-1.081-9.768-5.219a7.835 7.835 0 015.221-9.771c29.581-8.98 78.756-7.245 109.83 11.202a7.823 7.823 0 012.74 10.733c-2.2 3.722-7.02 4.949-10.73 2.739z" />
+													</svg>
+												</button>
+											</span>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div className="hidden lg:block relative w-0 flex-1">
+					<img className="absolute inset-0 h-full w-full object-cover" src="https://images.unsplash.com/photo-1505904267569-f02eaeb45a4c?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1908&q=80" alt="" />
+				</div>
+			</div>
+		</>
+	)
+}
+
+Login.getLayout = useBaseLayout()
+Login.middleware = [WithGuest]
+
+export default Login
