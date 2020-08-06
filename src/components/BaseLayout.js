@@ -12,6 +12,6 @@ const BaseLayout = ({ middleware, children }) => {
 	return children
 }
 
-export const useBaseLayout = () => (page, middleware) => <BaseLayout middleware={middleware}>{page}</BaseLayout>
+export const useBaseLayout = () => (page, pageProps) => <BaseLayout {...pageProps}>{page}</BaseLayout>
 
 export default BaseLayout
