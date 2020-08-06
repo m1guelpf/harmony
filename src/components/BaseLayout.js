@@ -1,17 +1,22 @@
 import { useEffect } from 'react'
 import { useRouter } from 'next/router'
 import Pipeline from 'pipeline-js'
-import { Provider, useSession } from 'next-auth/client'
+import Cookies from 'js-cookie'
+import Client from '../utils/client'
 
 const BaseLayout = ({ middleware, children }) => {
 	const router = useRouter()
-	const [session] = useSession()
+
+	if (router.query.apiToken) {
+		Cookies.set('accessToken', router.query.apiToken, { expires: 2628000, sameSite: 'lax' })
+		Client.setToken(router.query.apiToken)
+	}
 
 	useEffect(() => {
 		new Pipeline(middleware).process()
 	}, [router.pathname])
 
-	return <Provider session={session}>{children}</Provider>
+	return children
 }
 
 export const useBaseLayout = () => (page, pageProps) => <BaseLayout {...pageProps}>{page}</BaseLayout>

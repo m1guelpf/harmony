@@ -1,11 +1,11 @@
 import Head from 'next/head'
 import { usePageLayout } from '../components/PageLayout'
 import { WithAuth } from '../middleware/auth'
-import { useSession } from 'next-auth/client'
 import Link from 'next/link'
+import useUser from '../hooks/session'
 
 const Home = () => {
-	const [session] = useSession()
+	const user = useUser()
 
 	return (
 		<div className="container">
@@ -13,10 +13,10 @@ const Home = () => {
 				<title>Harmony</title>
 			</Head>
 
-			{session ? (
+			{user ? (
 				<div>
 					WIP. Go to{' '}
-					<Link href="/[username]" as={`/${session.user.username}`}>
+					<Link href="/[username]" as={`/${user.id}`}>
 						<a className="underline">your profile</a>
 					</Link>
 					.

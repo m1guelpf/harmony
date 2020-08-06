@@ -1,16 +1,14 @@
 import { usePageLayout } from '../../components/PageLayout'
-import { getProfileFromUsername } from '../../utils/db'
 import Avatar from '../../components/Avatar'
-import axios from 'axios'
 import useSWR from 'swr'
 import { useState } from 'react'
 import Transition from '../../components/Transition'
 import Skeleton from '../../components/Skeleton'
-import useSession from '../../hooks/session'
+import useUser from '../../hooks/session'
 import { WithAuth } from '../../middleware/auth'
 import collect from 'collect.js'
-
-const fetcher = (key) => axios.get(key).then((res) => res.data.items)
+import cookies from 'next-cookies'
+import Client from '../../utils/client'
 
 const spotifyPeriods = [
 	{ name: 'All Time', value: 'long_term' },
@@ -19,14 +17,22 @@ const spotifyPeriods = [
 ]
 
 const Match = ({ profile: profile }) => {
-	const session = useSession()
+	const user = useUser()
 	const [artistPeriod, setArtistPeriod] = useState(spotifyPeriods[0].value)
 	const [songPeriod, setSongPeriod] = useState(spotifyPeriods[0].value)
-	const { data: userArtists } = useSWR(() => `/api/spotify/top?type=artists&timeRange=${artistPeriod}&username=${session.user.username}`, fetcher)
-	const { data: userSongs } = useSWR(() => `/api/spotify/top?type=tracks&timeRange=${songPeriod}&username=${session.user.username}`, fetcher)
 
-	const { data: profileArtists } = useSWR(() => `/api/spotify/top?type=artists&timeRange=${artistPeriod}&username=${profile.username}`, fetcher)
-	const { data: profileSongs } = useSWR(() => `/api/spotify/top?type=tracks&timeRange=${songPeriod}&username=${profile.username}`, fetcher)
+	const { data: userArtists } = useSWR(
+		() => `stats-artists-${user.id}-${artistPeriod}`,
+		() => Client.stats({ type: 'artists', period: artistPeriod, username: user.id })
+	)
+	const { data: userSongs } = useSWR(
+		() => `stats-tracks-${user.id}-${artistPeriod}`,
+		() => Client.stats({ type: 'tracks', period: artistPeriod, username: user.id })
+	)
+
+	const { data: profileArtists } = useSWR(`stats-artists-${profile.username}-${artistPeriod}`, () => Client.stats({ type: 'artists', period: artistPeriod, username: profile.username }))
+
+	const { data: profileSongs } = useSWR(`stats-tracks-${profile.username}-${artistPeriod}`, () => Client.stats({ type: 'tracks', period: artistPeriod, username: profile.username }))
 
 	const songs = calculateSongs(userSongs, profileSongs)
 	const artists = calculateArtists(userArtists, profileArtists, songs)
@@ -36,11 +42,11 @@ const Match = ({ profile: profile }) => {
 			<div className="flex items-center">
 				<div className="flex relative z-0">
 					<Avatar className="w-12 h-12" parentClasses="z-30 text-white shadow-solid" src={profile.avatar} />
-					<Avatar className="w-12 h-12" parentClasses="-ml-8 z-20 text-white shadow-solid" src={session?.user?.image} />
+					<Avatar className="w-12 h-12" parentClasses="-ml-8 z-20 text-white shadow-solid" src={user?.avatar} />
 				</div>
 				<div className="ml-3">
 					<h1 className="text-2xl font-medium text-gray-800">
-						{session?.user?.name || <Skeleton width={100} />} &amp; {profile.name}
+						{user?.name || <Skeleton width={100} />} &amp; {profile.name}
 					</h1>
 					<p className="text-gray-600">Here's what you two have in common</p>
 				</div>
@@ -135,15 +141,19 @@ Match.getLayout = usePageLayout()
 Match.middleware = [WithAuth]
 
 export async function getServerSideProps({ params: { username }, req }) {
+	const { accessToken } = cookies({ req })
+
+	Client.setToken(accessToken)
+
 	try {
-		const profile = await getProfileFromUsername(username)
+		const profile = await Client.profile(username)
 
 		return {
 			props: {
 				profile: {
-					username,
+					username: profile.id,
 					name: profile.name,
-					avatar: profile.image,
+					avatar: profile.avatar,
 				},
 			},
 		}

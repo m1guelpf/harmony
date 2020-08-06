@@ -1,18 +1,12 @@
 import redirectTo from '../utils/redirectTo'
-import axios from 'axios'
+import Client from '../utils/client'
 
 export const WithAuth = async () => {
-	const session = await getSession()
-
-	if (Object.keys(session).length === 0) return redirectTo('/login')
+	Client.user().catch((error) => {
+		if (error.response.status === 401) return redirectTo('/login')
+	})
 }
 
 export const WithGuest = async () => {
-	const session = await getSession()
-
-	if (Object.keys(session).length !== 0) return redirectTo('/home')
-}
-
-const getSession = () => {
-	return axios.get('/api/auth/session').then((res) => res.data)
+	Client.user().then(() => redirectTo('/home'))
 }
