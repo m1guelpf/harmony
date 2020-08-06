@@ -2,13 +2,15 @@ import { useState } from 'react'
 import BaseLayout from './BaseLayout'
 import Transition from './Transition'
 import Logo from './Logo'
-import { useSession, signOut } from 'next-auth/client'
+import { signOut, signIn } from 'next-auth/client'
 import Avatar from './Avatar'
+import useSession from '../hooks/session'
+import Link from 'next/link'
 
 const PageLayout = ({ children, ...pageProps }) => {
+	const session = useSession()
 	const [isMenuOpen, setMenuOpen] = useState(false)
 	const [isProfileMenuOpen, setProfileMenuOpen] = useState(false)
-	const [session, loading] = useSession()
 
 	return (
 		<BaseLayout {...pageProps}>
@@ -137,44 +139,40 @@ const PageLayout = ({ children, ...pageProps }) => {
 								<path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h7" />
 							</svg>
 						</button>
-						<div className="mr-4 flex items-center md:mr-6">
-							<button className="p-1 text-gray-400 rounded-full hover:bg-gray-100 hover:text-gray-500 focus:outline-none focus:shadow-outline focus:text-gray-500" aria-label="Notifications">
-								<svg className="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
-									<path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-								</svg>
-							</button>
-
-							{/* Profile dropdown */}
-							<div className="ml-3 relative">
-								<div>
+						{session ? (
+							<div className="mr-4 flex items-center md:mr-6">
+								<div className="ml-3 relative">
 									<button onClick={() => setProfileMenuOpen((state) => !state)} className="max-w-xs flex items-center text-sm rounded-full focus:outline-none focus:shadow-outline" id="user-menu" aria-label="User menu" aria-haspopup="true">
-										<Avatar className="h-8 w-8" src={session?.user?.image} />
+										<Avatar className="h-8 w-8" src={session.user.image} />
 									</button>
-								</div>
-								<Transition show={isProfileMenuOpen} enter="transition ease-out duration-100" enterFrom="transform opacity-0 scale-95" enterTo="transform opacity-100 scale-100" leave="transition ease-in duration-75" leaveFrom="transform opacity-100 scale-100" leaveTo="transform opacity-0 scale-95">
-									<div className="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg">
-										<div className="py-1 rounded-md bg-white shadow-xs" role="menu" aria-orientation="vertical" aria-labelledby="user-menu">
-											<a href="/" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition ease-in-out duration-150" role="menuitem">
-												Your Profile
-											</a>
-											<a href="/" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition ease-in-out duration-150" role="menuitem">
-												Settings
-											</a>
-											<button onClick={() => signOut()} className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition ease-in-out duration-150" role="menuitem">
-												Sign out
-											</button>
+									<Transition show={isProfileMenuOpen} enter="transition ease-out duration-100" enterFrom="transform opacity-0 scale-95" enterTo="transform opacity-100 scale-100" leave="transition ease-in duration-75" leaveFrom="transform opacity-100 scale-100" leaveTo="transform opacity-0 scale-95">
+										<div className="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg">
+											<div className="py-1 rounded-md bg-white shadow-xs" role="menu" aria-orientation="vertical" aria-labelledby="user-menu">
+												<Link href="/[username]" as={`/${session.user.username}`}>
+													<a className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition ease-in-out duration-150" role="menuitem">
+														Your Profile
+													</a>
+												</Link>
+												<a href="/" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition ease-in-out duration-150" role="menuitem">
+													Settings
+												</a>
+												<button onClick={() => signOut()} className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition ease-in-out duration-150" role="menuitem">
+													Sign out
+												</button>
+											</div>
 										</div>
-									</div>
-								</Transition>
+									</Transition>
+								</div>
 							</div>
-						</div>
+						) : (
+							<button onClick={() => signIn('spotify')} type="button" className="text-center mr-2 px-4 my-3 border border-transparent text-sm leading-5 font-medium rounded-md text-indigo-700 bg-indigo-100 hover:bg-indigo-50 focus:outline-none focus:border-indigo-300 focus:shadow-outline-indigo active:bg-indigo-200 transition ease-in-out duration-150">
+								Log In
+							</button>
+						)}
 					</div>
 
 					<main className="flex-1 relative z-0 overflow-y-auto focus:outline-none" tabIndex={0}>
 						<div className="pt-2 pb-6 md:py-6">
-							<div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8">
-								<h1 className="text-2xl font-semibold text-gray-900">Dashboard</h1>
-							</div>
 							<div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8">
 								<div className="py-4">{children}</div>
 							</div>

@@ -11,5 +11,9 @@ export const UserSchema = {
 	target: User,
 	columns: {
 		...Adapters.TypeORM.Models.User.schema.columns,
+		username: {
+			type: 'varchar',
+			unique: true,
+		},
 	},
 }
