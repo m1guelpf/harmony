@@ -34,7 +34,7 @@ const Profile = ({ profile }) => {
 			<div className="flex items-center">
 				<Avatar className="w-12 h-12" src={profile.avatar} />
 				<div className="ml-3">
-					<h1 className="text-2xl font-medium text-gray-800">{profile.name}</h1>
+					<h1 className="text-2xl font-medium text-gray-800 dark:text-gray-300">{profile.name}</h1>
 				</div>
 			</div>
 			{!user && (
@@ -62,24 +62,22 @@ const Profile = ({ profile }) => {
 				</span>
 			)}
 			<div className="mt-8">
-				<div>
-					<div className="flex items-center justify-between mb-2">
-						<p className="text-xl font-medium">Favourite Artists</p>
-						<Dropdown className="flex-1" options={spotifyPeriods} value={artistPeriod} onChange={setArtistPeriod} />
-					</div>
-					<div className="flex items-stretch overflow-x-auto space-x-4">{artists ? artists.map(({ id, images, name, external_urls: { spotify: href } }) => <SpotiftItem key={id} href={href} image={images[0].url} name={name} />) : [...Array(10).keys()].map((id) => <SpotiftItem key={id} />)}</div>
-				</div>
-				<div>
-					<div className="flex items-center justify-between mb-2">
-						<p className="text-xl font-medium">Favourite Songs</p>
-						<Dropdown className="flex-1" options={spotifyPeriods} value={songPeriod} onChange={setSongPeriod} />
-					</div>
-					<div className="flex items-stretch overflow-x-auto space-x-4">{songs ? songs.map(({ id, album: { images }, name, external_urls: { spotify: href } }) => <SpotiftItem key={id} href={href} image={images[0].url} name={name} />) : [...Array(10).keys()].map((id) => <SpotiftItem key={id} />)}</div>
-				</div>
+				<SpotifySection title="Favourite Artists" period={artistPeriod} setPeriod={setArtistPeriod} items={artists} itemParse={({ id, images, name, external_urls: { spotify: href } }) => ({ id, image: images[0].url, name, href })} />
+				<SpotifySection className="mt-4" title="Favourite Songs" period={songPeriod} setPeriod={setSongPeriod} items={songs} itemParse={({ id, album: { images }, name, external_urls: { spotify: href } }) => ({ id, image: images[0].url, name, href })} />
 			</div>
 		</div>
 	)
 }
+
+export const SpotifySection = ({ className, title, period, setPeriod, items, itemParse }) => (
+	<div className={className}>
+		<div className="flex items-center justify-between mb-2">
+			<p className="text-xl font-medium dark:text-gray-300">{title}</p>
+			<Dropdown className="flex-1" options={spotifyPeriods} value={period} onChange={setPeriod} />
+		</div>
+		<div className="flex items-stretch overflow-x-auto space-x-4">{items ? items.map(itemParse).map(({ id, image, name, href }) => <SpotiftItem key={id} href={href} image={image} name={name} />) : [...Array(10).keys()].map((id) => <SpotiftItem key={id} />)}</div>
+	</div>
+)
 
 const Dropdown = ({ options, className = '', value, onChange, ...props }) => {
 	const [isOpen, setOpen] = useState(false)
@@ -93,22 +91,22 @@ const Dropdown = ({ options, className = '', value, onChange, ...props }) => {
 	return (
 		<div className={`relative flex items-center justify-end ${className}`}>
 			<button onClick={() => setOpen((state) => !state)} type="button" aria-haspopup="listbox" aria-expanded={isOpen ? 'open' : 'closed'} aria-labelledby="listbox-label" className="cursor-pointer flex items-center pl-1.5 rounded focus:outline-none focus:shadow-outline transition ease-in-out duration-150">
-				<span className="text-lg font-medium text-gray-600">{options.filter((option) => option.value === value)[0].name}</span>
+				<span className="text-lg font-medium text-gray-600 dark:text-gray-400">{options.filter((option) => option.value === value)[0].name}</span>
 				<span className="pointer-events-none">
-					<svg className="h-5 w-5 text-gray-500" viewBox="0 0 20 20" fill="none" stroke="currentColor">
+					<svg className="h-5 w-5 text-gray-500 dark:text-gray-400" viewBox="0 0 20 20" fill="none" stroke="currentColor">
 						<path d="M7 7l3-3 3 3m0 6l-3 3-3-3" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
 					</svg>
 				</span>
 			</button>
 			<Transition show={isOpen} leave="transition ease-in duration-100" leaveFrom="opacity-100" leaveTo="opacity-0">
-				<div className="absolute top-6 right-0 origin-top-right mt-1 w-full rounded-md bg-white shadow-lg">
+				<div className="absolute top-6 right-0 origin-top-right mt-1 w-full rounded-md bg-white dark:bg-gray-900 border border-transparent dark:border-gray-800 shadow-lg">
 					<ul tabIndex="-1" role="listbox" aria-labelledby="listbox-label" className="max-h-60 rounded-md py-1 text-base leading-6 shadow-xs overflow-auto focus:outline-none sm:text-sm sm:leading-5" x-max="1">
 						{options.map((option, i) => (
-							<li key={i} id="listbox-option-0" role="option" onClick={() => selectOption(option)} className="cursor-default select-none relative py-2 pl-3 pr-9 text-gray-900 hover:text-white hover:bg-indigo-600">
+							<li key={i} id="listbox-option-0" role="option" onClick={() => selectOption(option)} className="cursor-default select-none relative py-2 pl-3 pr-9 text-gray-900 dark:text-gray-300 hover:text-white dark-hover:text-gray-200 hover:bg-indigo-600 dark-hover:bg-indigo300">
 								<span className={`${option.value === value ? 'font-semibold' : 'font-normal'} block truncate`}>{option.name}</span>
 
 								{option.value === value && (
-									<span className="absolute inset-y-0 right-0 flex items-center pr-2 text-indigo-600">
+									<span className="absolute inset-y-0 right-0 flex items-center pr-2 text-indigo-600 dark:text-indigo-500">
 										<svg className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
 											<path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
 										</svg>
@@ -126,7 +124,7 @@ const Dropdown = ({ options, className = '', value, onChange, ...props }) => {
 const SpotiftItem = ({ href, image, name }) => (
 	<a href={href} target="_blank" rel="noopener noreferrer">
 		{image ? <div className="bg-white p-4 rounded-lg w-24 h-24 bg-cover" style={{ backgroundImage: `url(${image})` }} /> : <Skeleton className="w-24 h-24" />}
-		<p className="mt-1 text-center text-sm">{name || <Skeleton />}</p>
+		<p className="mt-1 text-center text-sm dark:text-gray-400">{name || <Skeleton />}</p>
 	</a>
 )
 
@@ -151,8 +149,6 @@ export async function getServerSideProps({ params: { username }, req }) {
 		}
 	} catch (e) {
 		if (e.message === 'User does not exist') return { props: { error: { statusCode: 404 } } }
-
-		console.log(e)
 
 		return { props: { error: { statusCode: 500 } } }
 	}

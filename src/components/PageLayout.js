@@ -19,13 +19,13 @@ const PageLayout = ({ children, ...pageProps }) => {
 
 	return (
 		<BaseLayout {...pageProps}>
-			<div className="h-screen flex overflow-hidden bg-gray-100">
+			<div className="h-screen flex overflow-hidden bg-gray-100 dark:bg-gray-900">
 				<div className="flex flex-col w-0 flex-1 overflow-hidden">
-					<div className="relative z-10 flex-shrink-0 flex justify-between h-16 bg-white shadow">
+					<div className="relative z-10 flex-shrink-0 flex justify-between h-16 bg-white dark:bg-gray-800 shadow">
 						<Link href="/home">
-							<a className="pl-4 flex items-center" aria-label="Open sidebar">
+							<a className="pl-4 flex items-center">
 								<Logo className="h-10 w-10" />
-								<span className="ml-2 font-medium text-2xl">Harmony</span>
+								<span className="ml-2 font-medium text-2xl dark:text-gray-200">Harmony</span>
 							</a>
 						</Link>
 						{user ? (
@@ -36,13 +36,13 @@ const PageLayout = ({ children, ...pageProps }) => {
 									</button>
 									<Transition show={isProfileMenuOpen} enter="transition ease-out duration-100" enterFrom="transform opacity-0 scale-95" enterTo="transform opacity-100 scale-100" leave="transition ease-in duration-75" leaveFrom="transform opacity-100 scale-100" leaveTo="transform opacity-0 scale-95">
 										<div className="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg">
-											<div className="py-1 rounded-md bg-white shadow-xs" role="menu" aria-orientation="vertical" aria-labelledby="user-menu">
+											<div className="py-1 rounded-md bg-white dark:bg-gray-900 shadow-xs" role="menu" aria-orientation="vertical" aria-labelledby="user-menu">
 												<Link href="/[username]" as={`/${user.id}`}>
-													<a className="w-full block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition ease-in-out duration-150" role="menuitem">
+													<a className="w-full block px-4 py-2 text-sm text-gray-700 dark:text-gray-400 hover:bg-gray-100 dark-hover:bg-gray-800 transition ease-in-out duration-150" role="menuitem">
 														Your Profile
 													</a>
 												</Link>
-												<button onClick={() => signOut()} className="w-full text-left block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition ease-in-out duration-150" role="menuitem">
+												<button onClick={() => signOut()} className="w-full text-left block px-4 py-2 text-sm text-gray-700 dark:text-gray-400 hover:bg-gray-100 dark-hover:bg-gray-800 transition ease-in-out duration-150" role="menuitem">
 													Sign out
 												</button>
 											</div>

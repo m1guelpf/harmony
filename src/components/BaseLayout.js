@@ -3,6 +3,7 @@ import { useRouter } from 'next/router'
 import Pipeline from 'pipeline-js'
 import Cookies from 'js-cookie'
 import Client from '../utils/client'
+import ThemeManager from './ThemeManager'
 
 const BaseLayout = ({ middleware, children }) => {
 	const router = useRouter()
@@ -16,7 +17,7 @@ const BaseLayout = ({ middleware, children }) => {
 		new Pipeline(middleware).process()
 	}, [router.pathname])
 
-	return children
+	return <ThemeManager>{children}</ThemeManager>
 }
 
 export const useBaseLayout = () => (page, pageProps) => <BaseLayout {...pageProps}>{page}</BaseLayout>

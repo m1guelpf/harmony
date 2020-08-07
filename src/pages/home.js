@@ -14,7 +14,7 @@ const Home = () => {
 			</Head>
 
 			{user ? (
-				<div>
+				<div className="dark:text-gray-300">
 					WIP. Go to{' '}
 					<Link href="/[username]" as={`/${user.id}`}>
 						<a className="underline">your profile</a>
@@ -22,7 +22,7 @@ const Home = () => {
 					.
 				</div>
 			) : (
-				<span>Wait a second</span>
+				<span className="dark:text-gray-300">Wait a second</span>
 			)}
 		</div>
 	)

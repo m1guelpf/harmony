@@ -9,6 +9,7 @@ import { WithAuth } from '../../middleware/auth'
 import collect from 'collect.js'
 import cookies from 'next-cookies'
 import Client from '../../utils/client'
+import { SpotifySection } from '../[username]'
 
 const spotifyPeriods = [
 	{ name: 'All Time', value: 'long_term' },
@@ -41,31 +42,19 @@ const Match = ({ profile: profile }) => {
 		<div>
 			<div className="flex items-center">
 				<div className="flex relative z-0">
-					<Avatar className="w-12 h-12" parentClasses="z-30 text-white shadow-solid" src={profile.avatar} />
-					<Avatar className="w-12 h-12" parentClasses="-ml-8 z-20 text-white shadow-solid" src={user?.avatar} />
+					<Avatar className="w-12 h-12" parentClasses="z-30 text-white dark:text-gray-700 shadow-solid" src={profile.avatar} />
+					<Avatar className="w-12 h-12" parentClasses="-ml-8 z-20 text-white dark:text-gray-700 shadow-solid" src={user?.avatar} />
 				</div>
 				<div className="ml-3">
-					<h1 className="text-2xl font-medium text-gray-800">
+					<h1 className="text-2xl font-medium text-gray-800 dark:text-gray-300">
 						{user?.name || <Skeleton width={100} />} &amp; {profile.name}
 					</h1>
-					<p className="text-gray-600">Here's what you two have in common</p>
+					<p className="text-gray-600 dark:text-gray-400">Here's what you two have in common</p>
 				</div>
 			</div>
 			<div className="mt-8">
-				<div>
-					<div className="flex items-center justify-between mb-2">
-						<p className="text-xl font-medium">Artists</p>
-						<Dropdown className="flex-1" options={spotifyPeriods} value={artistPeriod} onChange={setArtistPeriod} />
-					</div>
-					<div className="flex items-stretch overflow-x-auto space-x-4">{artists ? artists.map(({ id, images, name, external_urls: { spotify: href } }) => <SpotiftItem key={id} href={href} image={images[0].url} name={name} />) : [...Array(10).keys()].map((id) => <SpotiftItem key={id} />)}</div>
-				</div>
-				<div className="mt-4">
-					<div className="flex items-center justify-between mb-2">
-						<p className="text-xl font-medium">Songs</p>
-						<Dropdown className="flex-1" options={spotifyPeriods} value={songPeriod} onChange={setSongPeriod} />
-					</div>
-					<div className="flex items-stretch overflow-x-auto space-x-4">{songs ? songs.map(({ id, album: { images }, name, external_urls: { spotify: href } }) => <SpotiftItem key={id} href={href} image={images[0].url} name={name} />) : [...Array(10).keys()].map((id) => <SpotiftItem key={id} />)}</div>
-				</div>
+				<SpotifySection title="Favourite Artists" period={artistPeriod} setPeriod={setArtistPeriod} items={artists} itemParse={({ id, images, name, external_urls: { spotify: href } }) => ({ id, image: images[0].url, name, href })} />
+				<SpotifySection className="mt-4" title="Favourite Songs" period={songPeriod} setPeriod={setSongPeriod} items={songs} itemParse={({ id, album: { images }, name, external_urls: { spotify: href } }) => ({ id, image: images[0].url, name, href })} />
 			</div>
 		</div>
 	)
