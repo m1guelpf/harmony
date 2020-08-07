@@ -32,6 +32,10 @@ class Client {
 		return this.client.get(`/api/profile/${username}`)
 	}
 
+	profiles() {
+		return this.client.get('/api/profiles')
+	}
+
 	stats({ type, period, username }) {
 		return this.client.get(`/api/spotify/top/${type}/${period}/${username}`)
 	}

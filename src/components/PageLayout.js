@@ -6,6 +6,7 @@ import Avatar from './Avatar'
 import useUser from '../hooks/session'
 import Link from 'next/link'
 import Cookies from 'js-cookie'
+import { ThemeToggle } from './ThemeManager'
 
 const PageLayout = ({ children, ...pageProps }) => {
 	const user = useUser()
@@ -30,6 +31,7 @@ const PageLayout = ({ children, ...pageProps }) => {
 						</Link>
 						{user ? (
 							<div className="mr-4 flex items-center md:mr-6">
+								<ThemeToggle />
 								<div className="ml-3 relative">
 									<button onClick={() => setProfileMenuOpen((state) => !state)} className="max-w-xs flex items-center text-sm rounded-full focus:outline-none focus:shadow-outline" id="user-menu" aria-label="User menu" aria-haspopup="true">
 										<Avatar className="h-8 w-8" src={user.avatar} />
@@ -52,7 +54,7 @@ const PageLayout = ({ children, ...pageProps }) => {
 							</div>
 						) : (
 							<Link href="/login">
-								<a className="text-center mr-2 px-4 my-3 flex items-center border border-transparent text-sm leading-5 font-medium rounded-md text-indigo-700 bg-indigo-100 hover:bg-indigo-50 focus:outline-none focus:border-indigo-300 focus:shadow-outline-indigo active:bg-indigo-200 transition ease-in-out duration-150">Log In</a>
+								<a className="text-center mr-2 px-4 my-3 flex items-center border border-transparent text-sm leading-5 font-medium rounded-md text-indigo-700 dark:text-indigo-200 bg-indigo-100 dark:bg-indigo-900 hover:bg-indigo-50 dark-hover:bg-indigo-800 focus:outline-none focus:shadow-outline-indigo transition ease-in-out duration-150">Log In</a>
 							</Link>
 						)}
 					</div>
