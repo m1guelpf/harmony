@@ -23,12 +23,6 @@ const Login = () => {
 						<div>
 							<Logo className="h-12 w-auto" />
 							<h2 className="mt-6 text-3xl leading-9 font-extrabold text-gray-900">Sign in to your account</h2>
-							<p className="mt-2 text-sm leading-5 text-gray-600 max-w">
-								Or{' '}
-								<a href="/" className="font-medium text-indigo-600 hover:text-indigo-500 focus:outline-none focus:underline transition ease-in-out duration-150">
-									start your 14-day free trial
-								</a>
-							</p>
 						</div>
 
 						<div className="mt-8">

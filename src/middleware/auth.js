@@ -1,14 +1,10 @@
 import redirectTo from '../utils/redirectTo'
-import Client from '../utils/client'
+import Cookies from 'js-cookie'
 
 export const WithAuth = async () => {
-	Client.user().catch((error) => {
-		if (error.response.status === 401) return redirectTo('/login')
-	})
+	if (!Cookies.get('accessToken')) return redirectTo('/login')
 }
 
 export const WithGuest = async () => {
-	Client.user()
-		.then(() => redirectTo('/home'))
-		.catch(() => {})
+	if (Cookies.get('accessToken')) return redirectTo('/home')
 }
