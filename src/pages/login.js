@@ -21,7 +21,10 @@ const Login = () => {
 				<div className="flex-1 flex flex-col justify-center py-12 px-4 sm:px-6 lg:flex-none lg:px-20 xl:px-24">
 					<div className="mx-auto w-full max-w-sm">
 						<div>
-							<Logo className="h-12 w-auto" />
+							<div className="flex items-center">
+								<Logo className="h-12 w-auto" />
+								<span className="ml-2 font-medium text-2xl">Harmony</span>
+							</div>
 							<h2 className="mt-6 text-3xl leading-9 font-extrabold text-gray-900">Sign in to your account</h2>
 						</div>
 
