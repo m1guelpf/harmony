@@ -12,7 +12,7 @@ const PageLayout = ({ children, ...pageProps }) => {
 	const [isProfileMenuOpen, setProfileMenuOpen] = useState(false)
 
 	const signOut = () => {
-		Cookies.set('accessToken', { expires: 2628000, sameSite: 'lax' })
+		Cookies.remove('accessToken', { expires: 2628000, sameSite: 'lax' })
 	}
 
 	return (
