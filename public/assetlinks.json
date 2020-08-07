@@ -1,5 +1,10 @@
 [{
-      "relation": ["delegate_permission/common.handle_all_urls"],
-      "target" : { "namespace": "android_app", "package_name": "report.harmony.mobile",
-                   "sha256_cert_fingerprints": ["EA:14:20:57:4B:A0:A3:6D:BF:10:76:8E:28:B8:54:70:4A:5A:98:24:F5:68:D5:D8:56:C8:99:BF:13:79:82:48"] }
-    }]
+  "relation": ["delegate_permission/common.handle_all_urls"],
+  "target": {
+    "namespace": "android_app",
+    "package_name": "report.harmony.mobile",
+    "sha256_cert_fingerprints": [
+      "EA:14:20:57:4B:A0:A3:6D:BF:10:76:8E:28:B8:54:70:4A:5A:98:24:F5:68:D5:D8:56:C8:99:BF:13:79:82:48"
+    ]
+  }
+}]
