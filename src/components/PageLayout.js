@@ -13,6 +13,8 @@ const PageLayout = ({ children, ...pageProps }) => {
 
 	const signOut = () => {
 		Cookies.remove('accessToken', { expires: 2628000, sameSite: 'lax' })
+
+		window.location = '/login'
 	}
 
 	return (
