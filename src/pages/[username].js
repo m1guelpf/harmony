@@ -25,7 +25,7 @@ const Profile = ({ profile }) => {
 		() => Client.stats({ type: 'artists', period: artistPeriod, username: profile.username })
 	)
 	const { data: songs } = useSWR(
-		() => `stats-tracks-${profile.username}-${artistPeriod}`,
+		() => `stats-tracks-${profile.username}-${songPeriod}`,
 		() => Client.stats({ type: 'tracks', period: songPeriod, username: profile.username })
 	)
 
@@ -35,7 +35,6 @@ const Profile = ({ profile }) => {
 				<Avatar className="w-12 h-12" src={profile.avatar} />
 				<div className="ml-3">
 					<h1 className="text-2xl font-medium text-gray-800">{profile.name}</h1>
-					<p className="text-gray-600">Filler text here</p>
 				</div>
 			</div>
 			{!user && (

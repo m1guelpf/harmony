@@ -26,13 +26,13 @@ const Match = ({ profile: profile }) => {
 		() => Client.stats({ type: 'artists', period: artistPeriod, username: user.id })
 	)
 	const { data: userSongs } = useSWR(
-		() => `stats-tracks-${user.id}-${artistPeriod}`,
-		() => Client.stats({ type: 'tracks', period: artistPeriod, username: user.id })
+		() => `stats-tracks-${user.id}-${songPeriod}`,
+		() => Client.stats({ type: 'tracks', period: songPeriod, username: user.id })
 	)
 
 	const { data: profileArtists } = useSWR(`stats-artists-${profile.username}-${artistPeriod}`, () => Client.stats({ type: 'artists', period: artistPeriod, username: profile.username }))
 
-	const { data: profileSongs } = useSWR(`stats-tracks-${profile.username}-${artistPeriod}`, () => Client.stats({ type: 'tracks', period: artistPeriod, username: profile.username }))
+	const { data: profileSongs } = useSWR(`stats-tracks-${profile.username}-${songPeriod}`, () => Client.stats({ type: 'tracks', period: songPeriod, username: profile.username }))
 
 	const songs = calculateSongs(userSongs, profileSongs)
 	const artists = calculateArtists(userArtists, profileArtists, songs)
