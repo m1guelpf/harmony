@@ -20,21 +20,15 @@ const Match = ({ profile: profile }) => {
 	const [artistPeriod, setArtistPeriod] = useState(spotifyPeriods[0].value)
 	const [songPeriod, setSongPeriod] = useState(spotifyPeriods[0].value)
 
-	const { data: userArtists } = useSWR(
-		() => `stats-artists-${user.id}-${artistPeriod}`,
-		() => Client.stats({ type: 'artists', period: artistPeriod, username: user.id })
-	)
-	const { data: userSongs } = useSWR(
-		() => `stats-tracks-${user.id}-${songPeriod}`,
-		() => Client.stats({ type: 'tracks', period: songPeriod, username: user.id })
+	const { data: artists } = useSWR(
+		() => `stats-artists-${user.id}-${profile.username}-${artistPeriod}`,
+		() => Client.match({ type: 'artists', period: artistPeriod, username: profile.username })
 	)
 
-	const { data: profileArtists } = useSWR(`stats-artists-${profile.username}-${artistPeriod}`, () => Client.stats({ type: 'artists', period: artistPeriod, username: profile.username }))
-
-	const { data: profileSongs } = useSWR(`stats-tracks-${profile.username}-${songPeriod}`, () => Client.stats({ type: 'tracks', period: songPeriod, username: profile.username }))
-
-	const songs = calculateSongs(userSongs, profileSongs)
-	const artists = calculateArtists(userArtists, profileArtists, songs)
+	const { data: songs } = useSWR(
+		() => `stats-tracks-${user.id}-${profile.username}-${artistPeriod}`,
+		() => Client.match({ type: 'tracks', period: songPeriod, username: profile.username })
+	)
 
 	return (
 		<div>
@@ -56,23 +50,6 @@ const Match = ({ profile: profile }) => {
 			</div>
 		</div>
 	)
-}
-
-const calculateSongs = (userSongs, profileSongs) => {
-	profileSongs = collect(profileSongs)
-
-	return collect(userSongs).filter((song) => profileSongs.contains('id', song.id))
-}
-
-const calculateArtists = (userArtists, profileArtists, songs) => {
-	profileArtists = collect(profileArtists)
-
-	const songArtists = songs.map((song) => song.artists).flatten(1)
-
-	return collect(userArtists)
-		.filter((artist) => profileArtists.contains('id', artist.id))
-		.merge(songArtists)
-		.unique('id')
 }
 
 Match.getLayout = usePageLayout()

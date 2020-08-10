@@ -40,6 +40,10 @@ class Client {
 		return this.client.get(`/api/spotify/top/${type}/${period}/${username}`)
 	}
 
+	match({ type, period, username }) {
+		return this.client.get(`/api/spotify/match/${type}/${period}/${username}`)
+	}
+
 	setToken(token) {
 		this.apiToken = token
 
