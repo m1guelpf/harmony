@@ -1,6 +1,5 @@
 import { usePageLayout } from '../components/PageLayout'
 import Avatar from '../components/Avatar'
-import axios from 'axios'
 import useSWR from 'swr'
 import { useState } from 'react'
 import Transition from '../components/Transition'
@@ -32,7 +31,9 @@ const Profile = ({ profile }) => {
 	return (
 		<div>
 			<div className="flex items-center">
-				<Avatar className="w-12 h-12" src={profile.avatar} />
+				<a href={`https://open.spotify.com/user/${profile.username}`} target="_blank" rel="noopener noreferrer">
+					<Avatar className="w-12 h-12" src={profile.avatar} />
+				</a>
 				<div className="ml-3">
 					<h1 className="text-2xl font-medium text-gray-800 dark:text-gray-300">{profile.name}</h1>
 				</div>
