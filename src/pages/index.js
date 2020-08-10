@@ -35,6 +35,5 @@ const Profile = ({ username, name, avatar }) => {
 }
 
 Home.getLayout = usePageLayout()
-Home.middleware = [WithAuth]
 
 export default Home
