@@ -148,7 +148,7 @@ export async function getServerSideProps({ params: { username }, req }) {
 			},
 		}
 	} catch (e) {
-		if (e.message === 'User does not exist') return { props: { error: { statusCode: 404 } } }
+		if (e.response.status === 404) return { props: { error: { statusCode: 404 } } }
 
 		return { props: { error: { statusCode: 500 } } }
 	}
