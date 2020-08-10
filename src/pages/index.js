@@ -1,5 +1,4 @@
 import { usePageLayout } from '../components/PageLayout'
-import { WithAuth } from '../middleware/auth'
 import Link from 'next/link'
 import useSWR from 'swr'
 import Client from '../utils/client'
@@ -7,7 +6,6 @@ import Skeleton from '../components/Skeleton'
 
 const Home = () => {
 	let { data: profiles } = useSWR('/api/profiles', () => Client.profiles())
-	profiles = profiles ? [...Array(10).keys()].map((id) => ({ ...profiles[0], id: id + 1 })) : profiles
 
 	return (
 		<div className="container">

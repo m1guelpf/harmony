@@ -23,7 +23,7 @@ const PageLayout = ({ children, ...pageProps }) => {
 			<div className="h-screen flex overflow-hidden bg-gray-100 dark:bg-gray-900">
 				<div className="flex flex-col w-0 flex-1 overflow-hidden">
 					<div className="relative z-10 flex-shrink-0 flex justify-between h-16 bg-white dark:bg-gray-800 shadow">
-						<Link href="/home">
+						<Link href="/">
 							<a className="pl-4 flex items-center">
 								<Logo className="h-10 w-10" />
 								<span className="ml-2 font-medium text-2xl dark:text-gray-200">Harmony</span>
