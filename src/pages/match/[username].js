@@ -5,7 +5,6 @@ import { useState } from 'react'
 import Skeleton from '../../components/Skeleton'
 import useUser from '../../hooks/session'
 import { WithAuth } from '../../middleware/auth'
-import collect from 'collect.js'
 import Client from '../../utils/client'
 import { SpotifySection, getServerSideProps as getServerProps } from '../[username]'
 
