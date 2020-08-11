@@ -184,7 +184,7 @@ const ShareModal = ({ isOpen, onClose, url }) => {
 		navigator.permissions.query({ name: 'clipboard-write' }).then((result) => {
 			if (!['granted', 'prompt'].includes(result.state)) return
 
-			navigator.clipboard.writeText(url)
+			navigator.clipboard.writeText(url).then(() => onClose())
 		})
 	}
 
@@ -241,7 +241,7 @@ const ShareModal = ({ isOpen, onClose, url }) => {
 					</Transition>
 
 					<Transition show={showQR} enter="ease-out duration-300" enterFrom="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95" enterTo="opacity-100 translate-y-0 sm:scale-100" leave="ease-in duration-200" leaveFrom="opacity-100 translate-y-0 sm:scale-100" leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95">
-						<img src={qrImage} className="transform transition-all pointer-events-auto" role="dialog" aria-modal="true" alt="QR Code" />
+						<img src={qrImage} className="transform transition-all pointer-events-auto w-full h-auto max-w-xs" role="dialog" aria-modal="true" alt="QR Code" />
 					</Transition>
 				</div>
 			</Portal>
