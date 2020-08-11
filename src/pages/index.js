@@ -13,7 +13,7 @@ const Home = () => {
 
 	return (
 		<>
-			{user && (
+			{user && (!user.name || !user.avatar) && (
 				<Portal node={typeof document !== 'undefined' && document.getElementById('alerts')}>
 					<div className="bg-yellow-50 dark:bg-yellow-900 border-l-4 border-yellow-400 dark:border-yellow-700 p-4">
 						<div className="flex">
