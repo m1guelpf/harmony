@@ -1,14 +1,16 @@
 import { usePageLayout } from '../components/PageLayout'
 import Avatar from '../components/Avatar'
 import useSWR from 'swr'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Transition from '../components/Transition'
 import Skeleton from '../components/Skeleton'
 import useUser from '../hooks/session'
 import Link from 'next/link'
 import Client from '../utils/client'
 import cookies from 'next-cookies'
-import { MusicNoteSolid } from '../components/Icon'
+import { MusicNoteSolid, ShareSolid } from '../components/Icon'
+import QRCode from 'qrcode'
+import useTheme from '../hooks/theme'
 
 const spotifyPeriods = [
 	{ name: 'All Time', value: 'long_term' },
@@ -18,6 +20,7 @@ const spotifyPeriods = [
 
 const Profile = ({ profile }) => {
 	const user = useUser()
+	const { isDark } = useTheme()
 	const [artistPeriod, setArtistPeriod] = useState(spotifyPeriods[0].value)
 	const [songPeriod, setSongPeriod] = useState(spotifyPeriods[0].value)
 	const { data: artists } = useSWR(
@@ -28,16 +31,48 @@ const Profile = ({ profile }) => {
 		() => `stats-tracks-${profile.username}-${songPeriod}`,
 		() => Client.stats({ type: 'tracks', period: songPeriod, username: profile.username })
 	)
+	const [qrImage, setQrImage] = useState(null)
+
+	useEffect(() => {
+		if (!profile) return
+
+		QRCode.toDataURL(`https://harmony.report/match/${profile.username}`, {
+			errorCorrectionLevel: 'M',
+			color: {
+				dark: isDark ? '#e5e7eb' : '#374151',
+				light: isDark ? '#161e2e' : '#f4f5f7',
+			},
+		}).then((url) => setQrImage(url))
+	}, [profile, isDark])
+
+	const shareProfile = () => {
+		if (navigator.share) {
+			return navigator.share({
+				title: 'Harmony',
+				text: 'Check what music we have in common!',
+				url: `https://harmony.report/match/${profile.username}`,
+			})
+		}
+
+		alert('WIP')
+	}
 
 	return (
 		<div>
-			<div className="flex items-center">
-				<a href={`https://open.spotify.com/user/${profile.username}`} target="_blank" rel="noopener noreferrer">
-					<Avatar className="w-12 h-12" src={profile.avatar} />
-				</a>
-				<div className="ml-3">
-					<h1 className="text-2xl font-medium text-gray-800 dark:text-gray-300">{profile.name}</h1>
+			<div className="flex items-center justify-between">
+				<div className="flex items-center">
+					<a href={`https://open.spotify.com/user/${profile.username}`} target="_blank" rel="noopener noreferrer">
+						<Avatar className="w-12 h-12" src={profile.avatar} />
+					</a>
+					<div className="ml-3">
+						<h1 className="text-2xl font-medium text-gray-800 dark:text-gray-300">{profile.name}</h1>
+					</div>
 				</div>
+				<span className="inline-flex rounded-md shadow-sm">
+					<button onClick={shareProfile} type="button" className="inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-700 text-sm leading-5 font-medium rounded-md text-gray-700 dark:text-gray-400 bg-white dark:bg-gray-900 hover:text-gray-500 dark-hover:text-gray-200 focus:outline-none focus:shadow-outline transition ease-in-out duration-150">
+						<ShareSolid className="w-4 h-4" />
+					</button>
+				</span>
 			</div>
 			{!user && (
 				<span className="mt-4 w-full inline-flex rounded-md shadow-sm">
@@ -67,6 +102,7 @@ const Profile = ({ profile }) => {
 				<SpotifySection title="Favourite Artists" period={artistPeriod} setPeriod={setArtistPeriod} items={artists} itemParse={({ id, images, name, external_urls: { spotify: href } }) => ({ id, image: images?.[0]?.url, name, href })} emptyMessage="We don't have enough data to calculate this person's favourite artists" />
 				<SpotifySection className="mt-4" title="Favourite Songs" period={songPeriod} setPeriod={setSongPeriod} items={songs} itemParse={({ id, album: { images }, name, external_urls: { spotify: href } }) => ({ id, image: images[0].url, name, href })} emptyMessage="We don't have enough data to calculate this person's favourite songs" />
 			</div>
+			<div className="mt-6">{qrImage && <img src={qrImage} alt="QR Code" />}</div>
 		</div>
 	)
 }
