@@ -56,5 +56,19 @@
 			"platform": "play",
 			"id": "report.harmony.mobile"
 		}
-	]
+    ],
+    "shortcuts": [
+        {
+            "name": "Open your profile",
+            "short_name": "Profile",
+            "description": "View your Harmony profile",
+            "url": "/api/redirect?route=profile"
+        },
+        {
+            "name": "View the User gallery",
+            "short_name": "Users",
+            "description": "Compare your music against other Harmony users",
+            "url": "/"
+        }
+    ]
 }
