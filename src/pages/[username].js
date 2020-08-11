@@ -8,9 +8,10 @@ import useUser from '../hooks/session'
 import Link from 'next/link'
 import Client from '../utils/client'
 import cookies from 'next-cookies'
-import { MusicNoteSolid, ShareSolid } from '../components/Icon'
+import { MusicNoteSolid, ShareSolid, ShareOutline } from '../components/Icon'
 import QRCode from 'qrcode'
 import useTheme from '../hooks/theme'
+import { Portal } from 'react-portal'
 
 const spotifyPeriods = [
 	{ name: 'All Time', value: 'long_term' },
@@ -20,7 +21,7 @@ const spotifyPeriods = [
 
 const Profile = ({ profile }) => {
 	const user = useUser()
-	const { isDark } = useTheme()
+	const [shareOpen, setShareOpen] = useState(false)
 	const [artistPeriod, setArtistPeriod] = useState(spotifyPeriods[0].value)
 	const [songPeriod, setSongPeriod] = useState(spotifyPeriods[0].value)
 	const { data: artists } = useSWR(
@@ -31,30 +32,9 @@ const Profile = ({ profile }) => {
 		() => `stats-tracks-${profile.username}-${songPeriod}`,
 		() => Client.stats({ type: 'tracks', period: songPeriod, username: profile.username })
 	)
-	const [qrImage, setQrImage] = useState(null)
-
-	useEffect(() => {
-		if (!profile) return
-
-		QRCode.toDataURL(`https://harmony.report/match/${profile.username}`, {
-			errorCorrectionLevel: 'M',
-			color: {
-				dark: isDark ? '#e5e7eb' : '#374151',
-				light: isDark ? '#161e2e' : '#f4f5f7',
-			},
-		}).then((url) => setQrImage(url))
-	}, [profile, isDark])
 
 	const shareProfile = () => {
-		if (navigator.share) {
-			return navigator.share({
-				title: 'Harmony',
-				text: 'Check what music we have in common!',
-				url: `https://harmony.report/match/${profile.username}`,
-			})
-		}
-
-		alert('WIP')
+		setShareOpen(true)
 	}
 
 	return (
@@ -102,7 +82,9 @@ const Profile = ({ profile }) => {
 				<SpotifySection title="Favourite Artists" period={artistPeriod} setPeriod={setArtistPeriod} items={artists} itemParse={({ id, images, name, external_urls: { spotify: href } }) => ({ id, image: images?.[0]?.url, name, href })} emptyMessage="We don't have enough data to calculate this person's favourite artists" />
 				<SpotifySection className="mt-4" title="Favourite Songs" period={songPeriod} setPeriod={setSongPeriod} items={songs} itemParse={({ id, album: { images }, name, external_urls: { spotify: href } }) => ({ id, image: images[0].url, name, href })} emptyMessage="We don't have enough data to calculate this person's favourite songs" />
 			</div>
-			<div className="mt-6">{qrImage && <img src={qrImage} alt="QR Code" />}</div>
+			<Portal>
+				<ShareModal isOpen={shareOpen} onClose={() => setShareOpen(false)} url={`https://harmony.report/match/${profile.username}`} />
+			</Portal>
 		</div>
 	)
 }
@@ -174,6 +156,98 @@ const SpotiftItem = ({ href, image, name }) => (
 		<p className="mt-1 text-center text-sm dark:text-gray-400">{name || <Skeleton />}</p>
 	</a>
 )
+
+const ShareModal = ({ isOpen, onClose, url }) => {
+	const { isDark } = useTheme()
+	const [showQR, setShowQR] = useState(false)
+	const [qrImage, setQrImage] = useState(null)
+
+	useEffect(() => {
+		QRCode.toDataURL(url, {
+			errorCorrectionLevel: 'M',
+			color: {
+				dark: isDark ? '#e5e7eb' : '#374151',
+				light: isDark ? '#161e2e' : '#f4f5f7',
+			},
+		}).then((url) => setQrImage(url))
+	}, [url, isDark])
+
+	const shareNative = () => {
+		navigator.share({
+			title: 'Harmony',
+			text: 'Check what music we have in common!',
+			url,
+		})
+	}
+
+	const copyLink = () => {
+		navigator.permissions.query({ name: 'clipboard-write' }).then((result) => {
+			if (!['granted', 'prompt'].includes(result.state)) return
+
+			navigator.clipboard.writeText(url)
+		})
+	}
+
+	const openQR = () => {
+		onClose()
+		setShowQR(true)
+	}
+
+	return (
+		<>
+			<div className="fixed bottom-0 inset-x-0 px-4 pb-6 sm:inset-0 sm:p-0 sm:flex sm:items-center sm:justify-center z-30 pointer-events-none">
+				<Transition show={isOpen} enter="ease-out duration-300" enterFrom="opacity-0" enterTo="opacity-100" leave="ease-in duration-200" leaveFrom="opacity-100" leaveTo="opacity-0">
+					<div className="fixed inset-0 transition-opacity">
+						<div onClick={onClose} className="absolute inset-0 bg-gray-500 dark:bg-gray-600 opacity-75 pointer-events-auto" />
+					</div>
+				</Transition>
+
+				<Transition show={isOpen} enter="ease-out duration-300" enterFrom="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95" enterTo="opacity-100 translate-y-0 sm:scale-100" leave="ease-in duration-200" leaveFrom="opacity-100 translate-y-0 sm:scale-100" leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95">
+					<div className="bg-white dark:bg-gray-900 rounded-lg px-4 pt-5 pb-4 overflow-hidden shadow-xl transform transition-all sm:max-w-sm sm:w-full sm:p-6 pointer-events-auto" role="dialog" aria-modal="true" aria-labelledby="modal-headline">
+						<div>
+							<div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-indigo-100 dark:bg-gray-800">
+								<ShareOutline className="h-6 w-6 text-indigo-600 dark:text-gray-400" />
+							</div>
+							<div className="mt-3 text-center sm:mt-5">
+								<h3 className="text-lg leading-6 font-medium text-gray-900 dark:text-gray-300" id="modal-headline">
+									Share your profile
+								</h3>
+								<div className="mt-2">
+									<p className="text-sm leading-5 text-gray-500 dark:text-gray-400">Share your Harmony profile with your friends to see what music you have in common.</p>
+								</div>
+							</div>
+						</div>
+						<div className="mt-5 sm:mt-6 flex items-center space-x-4">
+							<span className="flex w-full rounded-md shadow-sm">
+								<button onClick={navigator.share ? shareNative : copyLink} type="button" className="inline-flex justify-center w-full rounded-md border border-transparent px-4 py-2 bg-indigo-600 dark:bg-gray-800 text-base leading-6 font-medium text-white shadow-sm hover:bg-indigo-500 dark-hover:bg-gray-700 focus:outline-none focus:shadow-outline transition ease-in-out duration-150 sm:text-sm sm:leading-5">
+									{navigator.share ? 'Share Link' : 'Copy Link'}
+								</button>
+							</span>
+							<span className="flex w-full rounded-md shadow-sm">
+								<button onClick={openQR} type="button" className="inline-flex justify-center w-full rounded-md border border-transparent px-4 py-2 bg-indigo-600 dark:bg-gray-800 text-base leading-6 font-medium text-white shadow-sm hover:bg-indigo-500 dark-hover:bg-gray-700 focus:outline-none focus:shadow-outline transition ease-in-out duration-150 sm:text-sm sm:leading-5">
+									Show QR Code
+								</button>
+							</span>
+						</div>
+					</div>
+				</Transition>
+			</div>
+			<Portal>
+				<div className="fixed inset-0 flex items-center justify-center z-40 pointer-events-none">
+					<Transition show={showQR} enter="ease-out duration-300" enterFrom="opacity-0" enterTo="opacity-100" leave="ease-in duration-200" leaveFrom="opacity-100" leaveTo="opacity-0">
+						<div className="fixed inset-0 transition-opacity">
+							<div onClick={() => setShowQR(false)} className="absolute inset-0 bg-gray-500 dark:bg-gray-600 opacity-75 pointer-events-auto" />
+						</div>
+					</Transition>
+
+					<Transition show={showQR} enter="ease-out duration-300" enterFrom="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95" enterTo="opacity-100 translate-y-0 sm:scale-100" leave="ease-in duration-200" leaveFrom="opacity-100 translate-y-0 sm:scale-100" leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95">
+						<img src={qrImage} className="transform transition-all pointer-events-auto" role="dialog" aria-modal="true" alt="QR Code" />
+					</Transition>
+				</div>
+			</Portal>
+		</>
+	)
+}
 
 Profile.getLayout = usePageLayout()
 

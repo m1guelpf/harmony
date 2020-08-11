@@ -4,7 +4,11 @@ const selectorParser = require('postcss-selector-parser')
 module.exports = {
 	purge: ['./src/**/*.{js,mdx}', './next.config.js'],
 	theme: {
-		extend: {},
+		extend: {
+			fill: {
+				none: 'none',
+			},
+		},
 	},
 	variants: {
 		backgroundColor: ['responsive', 'hover', 'focus', 'dark', 'dark-hover'],
