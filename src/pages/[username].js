@@ -83,8 +83,8 @@ export const SpotifySection = ({ className, title, period, setPeriod, items, ite
 
 export const EmptyState = ({ message }) => (
 	<div className="flex flex-col items-center w-full">
-		<MusicNoteSolid className="w-8 h-8 text-gray-400 mb-1" />
-		<span className="text-gray-600 text-center max-w-xs">{message}</span>
+		<MusicNoteSolid className="w-8 h-8 text-gray-400 dark:text-gray-600 mb-1" />
+		<span className="text-gray-600 dark:text-gray-400 text-center max-w-xs">{message}</span>
 	</div>
 )
 
