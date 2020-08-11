@@ -44,8 +44,8 @@ const Match = ({ profile: profile }) => {
 				</div>
 			</div>
 			<div className="mt-8">
-				<SpotifySection title="Favourite Artists" period={artistPeriod} setPeriod={setArtistPeriod} items={artists} itemParse={({ id, images, name, external_urls: { spotify: href } }) => ({ id, image: images?.[0]?.url, name, href })} />
-				<SpotifySection className="mt-4" title="Favourite Songs" period={songPeriod} setPeriod={setSongPeriod} items={songs} itemParse={({ id, album: { images }, name, external_urls: { spotify: href } }) => ({ id, image: images[0].url, name, href })} />
+				<SpotifySection title="Favourite Artists" period={artistPeriod} setPeriod={setArtistPeriod} items={artists} itemParse={({ id, images, name, external_urls: { spotify: href } }) => ({ id, image: images?.[0]?.url, name, href })} emptyMessage="You don't seem to have any artists in common for this period" />
+				<SpotifySection className="mt-4" title="Favourite Songs" period={songPeriod} setPeriod={setSongPeriod} items={songs} itemParse={({ id, album: { images }, name, external_urls: { spotify: href } }) => ({ id, image: images[0].url, name, href })} emptyMessage="You don't seem to have any songs in common for this period" />
 			</div>
 		</div>
 	)

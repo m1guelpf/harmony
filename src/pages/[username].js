@@ -8,6 +8,7 @@ import useUser from '../hooks/session'
 import Link from 'next/link'
 import Client from '../utils/client'
 import cookies from 'next-cookies'
+import { MusicNoteSolid } from '../components/Icon'
 
 const spotifyPeriods = [
 	{ name: 'All Time', value: 'long_term' },
@@ -63,24 +64,31 @@ const Profile = ({ profile }) => {
 				</span>
 			)}
 			<div className="mt-8">
-				<SpotifySection title="Favourite Artists" period={artistPeriod} setPeriod={setArtistPeriod} items={artists} itemParse={({ id, images, name, external_urls: { spotify: href } }) => ({ id, image: images?.[0]?.url, name, href })} />
-				<SpotifySection className="mt-4" title="Favourite Songs" period={songPeriod} setPeriod={setSongPeriod} items={songs} itemParse={({ id, album: { images }, name, external_urls: { spotify: href } }) => ({ id, image: images[0].url, name, href })} />
+				<SpotifySection title="Favourite Artists" period={artistPeriod} setPeriod={setArtistPeriod} items={artists} itemParse={({ id, images, name, external_urls: { spotify: href } }) => ({ id, image: images?.[0]?.url, name, href })} emptyMessage="We don't have enough data to calculate this person's favourite artists" />
+				<SpotifySection className="mt-4" title="Favourite Songs" period={songPeriod} setPeriod={setSongPeriod} items={songs} itemParse={({ id, album: { images }, name, external_urls: { spotify: href } }) => ({ id, image: images[0].url, name, href })} emptyMessage="We don't have enough data to calculate this person's favourite songs" />
 			</div>
 		</div>
 	)
 }
 
-export const SpotifySection = ({ className, title, period, setPeriod, items, itemParse }) => (
+export const SpotifySection = ({ className, title, period, setPeriod, items, itemParse, emptyMessage }) => (
 	<div className={className}>
 		<div className="flex items-center justify-between mb-2">
 			<p className="text-xl font-medium dark:text-gray-300">{title}</p>
 			<Dropdown className="flex-1" options={spotifyPeriods} value={period} onChange={setPeriod} />
 		</div>
-		<div className="flex items-stretch overflow-x-auto space-x-4">{items ? items.map(itemParse).map(({ id, image, name, href }) => <SpotiftItem key={id} href={href} image={image} name={name} />) : [...Array(10).keys()].map((id) => <SpotiftItem key={id} />)}</div>
+		<div className="flex items-stretch overflow-x-auto space-x-4">{items ? items?.length === 0 ? <EmptyState message={emptyMessage} /> : items.map(itemParse).map(({ id, image, name, href }) => <SpotiftItem key={id} href={href} image={image} name={name} />) : [...Array(10).keys()].map((id) => <SpotiftItem key={id} />)}</div>
 	</div>
 )
 
-const Dropdown = ({ options, className = '', value, onChange, ...props }) => {
+export const EmptyState = ({ message }) => (
+	<div className="flex flex-col items-center w-full">
+		<MusicNoteSolid className="w-8 h-8 text-gray-400 mb-1" />
+		<span className="text-gray-600 text-center max-w-xs">{message}</span>
+	</div>
+)
+
+const Dropdown = ({ options, className = '', value, onChange }) => {
 	const [isOpen, setOpen] = useState(false)
 
 	const selectOption = (option) => {
@@ -103,8 +111,10 @@ const Dropdown = ({ options, className = '', value, onChange, ...props }) => {
 				<div className="absolute top-6 right-0 origin-top-right mt-1 w-full rounded-md bg-white dark:bg-gray-900 border border-transparent dark:border-gray-800 shadow-lg">
 					<ul tabIndex="-1" role="listbox" aria-labelledby="listbox-label" className="max-h-60 rounded-md py-1 text-base leading-6 shadow-xs overflow-auto focus:outline-none sm:text-sm sm:leading-5" x-max="1">
 						{options.map((option, i) => (
-							<li key={i} id="listbox-option-0" role="option" onClick={() => selectOption(option)} className="cursor-default select-none relative py-2 pl-3 pr-9 text-gray-900 dark:text-gray-300 hover:text-white dark-hover:text-gray-200 hover:bg-indigo-600 dark-hover:bg-indigo300">
-								<span className={`${option.value === value ? 'font-semibold' : 'font-normal'} block truncate`}>{option.name}</span>
+							<li key={i} id="listbox-option-0" onClick={() => selectOption(option)} className="cursor-default select-none relative py-2 pl-3 pr-9 text-gray-900 dark:text-gray-300 hover:text-white dark-hover:text-gray-200 hover:bg-indigo-600 dark-hover:bg-indigo300">
+								<span role="option" className={`${option.value === value ? 'font-semibold' : 'font-normal'} block truncate`} aria-selected={option.value === value}>
+									{option.name}
+								</span>
 
 								{option.value === value && (
 									<span className="absolute inset-y-0 right-0 flex items-center pr-2 text-indigo-600 dark:text-indigo-500">
