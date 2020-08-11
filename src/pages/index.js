@@ -54,7 +54,7 @@ const Profile = ({ username, name, avatar, isFirst = false }) => {
 		<LinkOrDiv href="/[username]" as={`/${username}`}>
 			<a className="flex flex-col items-start sm:mb-4">
 				<div className="relative">
-					{avatar ? <div className="bg-white p-4 rounded-lg w-24 h-24 bg-cover" style={{ backgroundImage: `url(${avatar})` }} /> : <Skeleton className="w-24 h-24" />}
+					{username ? <div className="p-4 rounded-lg w-24 h-24 bg-cover bg-indigo-300 dark:bg-indigo-900" style={{ backgroundImage: `url(${avatar || '/img/avatar.png'})`, boxShadow: 'inset 0 0 0 -1px black' }} /> : <Skeleton className="w-24 h-24" />}
 					{isFirst && (
 						<div className="absolute top-0 inset-x-0 -mt-2.5">
 							<span className="inline-flex items-center px-3 py-0.5 rounded-full text-sm font-medium leading-5 bg-indigo-100 dark:bg-gray-700 text-indigo-800 dark:text-gray-300">
@@ -64,7 +64,7 @@ const Profile = ({ username, name, avatar, isFirst = false }) => {
 						</div>
 					)}
 				</div>
-				<p className="mt-1 text-center text-sm dark:text-gray-400">{name || <Skeleton />}</p>
+				<p className="mt-1 text-center text-sm dark:text-gray-400 w-full">{name || <Skeleton />}</p>
 			</a>
 		</LinkOrDiv>
 	)
